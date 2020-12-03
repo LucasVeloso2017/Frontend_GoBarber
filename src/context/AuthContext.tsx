@@ -1,4 +1,5 @@
 import React,{ createContext,useCallback,useState,useContext } from 'react'
+import { object } from 'yup'
 import api from '../services/api'
 
 interface authState{
@@ -6,6 +7,14 @@ interface authState{
     user:object
 }
 
+interface UserInterface{
+    id:string
+    name:string
+    avatar:string
+    avatar_url:string
+    admin:boolean
+    email:string
+}
 
 interface signInCredentials{
     email:string
@@ -13,7 +22,7 @@ interface signInCredentials{
 }
 
 interface authContext{
-    user:object
+    user:UserInterface
     signin(credentials:signInCredentials):Promise<void>
     signout():void
 
@@ -21,13 +30,12 @@ interface authContext{
 
 const AuthContext = createContext<authContext>({} as authContext)
 
-
 const AuthProvider: React.FC = ({children}) => {
     
     const[data,setData]=useState<authState>(()=>{
         const token = localStorage.getItem('@GoBarber:token')
         const user = localStorage.getItem('@GoBarber:user')
-
+        
         if(token && user){
             return{
                 token,
@@ -60,7 +68,7 @@ const AuthProvider: React.FC = ({children}) => {
     
     return(
       <>
-        <AuthContext.Provider value={{ user:data.user , signin, signout }}>
+        <AuthContext.Provider value={{ user:data.user as UserInterface , signin, signout }}>
             {children}
         </AuthContext.Provider>
     
